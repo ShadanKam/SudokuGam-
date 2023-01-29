@@ -1,0 +1,180 @@
+@startuml "SudokuRevised"
+class Puzzle{
+    -puzzle: Puzzle{static}
+    +numbers: int[][]
+    +isGiven: boolean[][]
+
+
+    -Puzzle()
+    +Puzzle getPuzzle(){static}
+    +void newPuzzle(int cellsToGuess)
+}
+
+class Cell extends JTextField{
+    -serialVersionUID: long
+    +BG_GIVEN: Color
+    +FG_GIVEN: Color
+    +FG_NOT_GIVEN: Color
+    +BG_TO_GUESS: Color
+    +BG_CORRECT_GUESS: Color
+    +BG_WRONG_GUESS: Color
+    +FONT_NUMBERS: Font
+    +row: int
+    +col: int
+    +number: int
+    +status: CellStatus
+
+    +Cell(int row, int col)
+    +void newGame(int number, boolean isGiven)
+    +void paint()
+}
+
+class CellStatus{
+    +GIVEN: enum
+    +TO_GUESS: enum
+    +CORRECT_GUESS: enum
+    +WRONG_GUESS: enum
+}
+
+interface State {
+
+    +void paintCell(Cell cell, Context context);
+    
+}
+class NotGivenState implements State{
+    +FG_NOT_GIVEN: Color{static}
+    + BG_TO_GUESS: Color{static}
+    +void paintCell(Cell cell, Context context)
+}
+
+class CorrectState implements State{
+
+   +BG_CORRECT_GUESS : Color{static}
++paintCell(Cell cell, Context context)
+        
+    }
+class WrongState implements State{
+    +BG_WRONG_GUESS: Color{static}
+
+
+    +void paintCell(Cell cell, Context context) 
+    }
+class GivenState implements State{
+    +BG_GIVEN: Color{static}
+    +FG_GIVEN: Color{static}
+
++void paintCell(Cell cell, Context context)
+    
+public interface GameLevel {
+ 
+}
+class EasyLevel implements GameLevel {
+
+    +EasyLevel(int[][] numbers, boolean[][] isGiven)
+    }
+class HardLevel implements GameLevel {
+
+    + HardLevel(int[][] numbers, boolean[][] isGiven) }
+
+class GameBoardPanel extends JPanel{
+    -serialVersionUID: long
+    +counter: int
+    +GRID_SIZE: int
+    +SUBGRID_SIZE: int
+    +CELL_SIZEZ: int
+    +BOARD_WIDTH: int
+    +BOARD_HEIGHT: int
+    +cells: Cells[][]
+    +savedCells: int[][]
+    +puzzle: Puzzle
+
+    +void GameBoardPanel()
+    +boolean addData(String username, boolean[][] isGiven)
+    +void newGame(int cellsToGuess, String username)
+    +boolean isSolved()
+    +void setListener()
+}
+
+class SudokuMain extends JFrame{
+    -serialVersionUID: long
+    -board: GameBoardPanel
+    -btrNewGame: JButton
+    +counter: int
+
+    +SudokuMain()
+    +void loadGame(String user, String level, int score)
+    +SudokuMain(int level, String user)
+    +void main(String[] args)
+}
+
+class Login implements ActionListener{
+    -username: JFrame
+    -helpFrame: JFrame
+    -resumeGame: JFrame
+    -panel3: JPanel
+    -panel4: JPanel
+    -panel: JPanel
+    -user: JLabel
+    -userText: JTextField
+    -next: JButton
+    -play: JButton
+    -help: JButton
+    -levels: JFrame
+    -panel2: JPanel
+    -easy: JButton
+    -hard: JButton
+    -back: JButton
+    -newGame: JButton
+    -oldGame: JButton
+
+    +Login()
+    +void loginFrame()
+    +void levelsFrame()
+    +void loadGame(String level)
+    +void hasSavedGame(String username, String level, int score)
+    +void helpFrame()
+    +void resumeGame()
+    +boolean validateUser()
+    +boolean validateUserLength()
+    +void actionPerformed(ActionEvent e)
+}
+
+interface InterfaceGameSaver{
+    
+    +boolean save(GameBoardPanel gameBoard)
+    
+    +boolean hasSaveGame()
+
+    +GameBoardPanel getSavedGame()
+}
+class ProxyGameSaver implements InterfaceGameSaver{
+    
+    -fileName: String
+    
+    -level: String
+
+    -game: GameSaver
+
+    +ProxyGameSaver(String name, String level) 
+
+    +boolean save(GameBoardPanel gameBoard)
+
+    +boolean hasSaveGame()
+
+    +GameBoardPanel getSavedGame()
+    
+}
+
+
+Login "1" -- "1" SudokuMain
+Login "1" -- "n" ProxyGameSaver
+Puzzle "1" --* "1" GameBoardPanel
+Cell "1" *-- "1" CellStatus
+Cell "9x9" --* "1" GameBoardPanel
+GameBoardPanel "1" *-- "1" SudokuMain
+GameBoardPanel "1" *-- "n" ProxyGameSaver
+Puzzle "1" --> "1" EasyLevel
+Puzzle "1" --> "1" HardLevel
+
+
+@enduml
